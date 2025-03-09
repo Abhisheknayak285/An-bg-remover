@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>An Background Remover</title>
+    <title>Pro Background Remover</title>
     <style>
         body {
             background: #121212;
@@ -14,18 +14,26 @@
             height: 100vh;
             flex-direction: column;
             text-align: center;
+            margin: 0;
+            padding: 0;
         }
         .container {
             background: #1e1e1e;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-            width: 350px;
+            width: 90%;
+            max-width: 350px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         h1 {
             color: #ff9800;
             font-size: 22px;
             margin-bottom: 15px;
+            word-wrap: break-word;
         }
         input, .btn {
             width: 100%;
@@ -34,6 +42,7 @@
             border-radius: 5px;
             margin: 10px 0;
             cursor: pointer;
+            box-sizing: border-box;
         }
         input {
             background: #2a2a2a;
@@ -50,14 +59,19 @@
         .image-preview {
             display: none;
             margin-top: 20px;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
         }
         img {
             max-width: 100%;
+            height: auto;
             border-radius: 8px;
         }
         .download-options {
             display: none;
             margin-top: 15px;
+            width: 100%;
         }
         .download-options button {
             display: block;
@@ -68,7 +82,7 @@
 </head>
 <body>
 
-    <h1>An Background Remover</h1>
+    <h1>Professional Background Remover</h1>
     <div class="container">
         <input type="file" id="upload">
         <button class="btn" onclick="removeBg()">Remove Background</button>
@@ -100,17 +114,17 @@
             }
 
             let countdown = 5;
-            removeBgBtn.innerText = `Wait... ${countdown}s`; // Fixed string interpolation
+            removeBgBtn.innerText = `Wait... ${countdown}s`;
             removeBgBtn.disabled = true;
 
             const countdownInterval = setInterval(() => {
                 countdown--;
-                removeBgBtn.innerText = `Wait... ${countdown}s`; // Fixed string interpolation
+                removeBgBtn.innerText = `Wait... ${countdown}s`;
 
                 if (countdown === 0) {
                     clearInterval(countdownInterval);
                     removeBgBtn.innerText = "Removing...";
-                    
+
                     const formData = new FormData();
                     formData.append("image_file", fileInput.files[0]);
                     formData.append("size", "auto");
@@ -146,6 +160,7 @@
                 return;
             }
 
+            let canvas = document.createElement("canvas");
             let img = new Image();
             img.crossOrigin = "Anonymous";
             img.src = processedImageUrl;
@@ -153,45 +168,41 @@
             img.onload = function() {
                 let width = img.width;
                 let height = img.height;
-                let canvasSize = Math.max(width, height); // Default to the largest dimension for square
 
-                // Adjust canvas size based on the selected resolution
+                // Adjust image resolution based on the selected resolution
                 if (resolution === 720) {
-                    canvasSize = 720;
+                    width = 1280;
+                    height = 720;
                 } else if (resolution === 1080) {
-                    canvasSize = 1080;
-                } else if (resolution === 'original') {
-                    canvasSize = Math.max(width, height);
+                    width = 1920;
+                    height = 1080;
                 }
 
-                // Create a square canvas with the adjusted size
-                let canvas = document.createElement("canvas");
-                canvas.width = canvasSize;
-                canvas.height = canvasSize;
+                canvas.width = width;
+                canvas.height = height;
                 let ctx = canvas.getContext("2d");
 
-                // Calculate offsets to center the image on the canvas
-                let xOffset = (canvasSize - width) / 2;
-                let yOffset = (canvasSize - height) / 2;
+                // Draw the image on canvas
+                ctx.drawImage(img, 0, 0, width, height);
 
-                // Draw the image centered on the canvas
-                ctx.drawImage(img, xOffset, yOffset, width, height);
+                // Adding watermark with black color
+                ctx.font = "24px Arial"; // Slightly larger font for visibility
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Black color with some transparency
+                ctx.textAlign = "right"; // Align the text to the right
+                ctx.textBaseline = "bottom"; // Place text at the bottom
+                ctx.fillText("@ABHISHEK NAYAK", width - 10, height - 10); // Position in the bottom-right corner
 
-                // Convert the canvas to a Blob and trigger download
-                canvas.toBlob(function(blob) {
-                    let link = document.createElement("a");
-                    link.href = URL.createObjectURL(blob);
-                    // Default download name
-                    link.download = "codewithabhishek.png"; 
-                    link.click();
-                }, "image/png");
-            };
-
-            img.onerror = function() {
-                console.error("Error loading image.");
+                // Triggering the download with watermark
+                let link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = "codewithabhishek.png"; // Default name for download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             };
         }
     </script>
 
 </body>
 </html>
+
