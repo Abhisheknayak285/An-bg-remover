@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>An Background Remover</title>
+    <style>
+        body {
+            background: #121212;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            text-align: center;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            width: 350px;
+        }
+        h1 {
+            color: #ff9800;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        input, .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        input {
+            background: #2a2a2a;
+            color: white;
+        }
+        .btn {
+            background: #ff9800;
+            color: white;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #e68900;
+        }
+        .image-preview {
+            display: none;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .download-options {
+            display: none;
+            margin-top: 15px;
+        }
+        .download-options button {
+            display: block;
+            width: 100%;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>An Background Remover</h1>
+    <div class="container">
+        <input type="file" id="upload">
+        <button class="btn" onclick="removeBg()">Remove Background</button>
+
+        <div class="image-preview">
+            <img id="output">
+        </div>
+
+        <div class="download-options">
+            <button class="btn" onclick="downloadImage(720)">Download 720p</button>
+            <button class="btn" onclick="downloadImage(1080)">Download 1080p</button>
+            <button class="btn" onclick="downloadImage('original')">Download Original</button>
+        </div>
+    </div>
+
+    <script>
+        let processedImageUrl = "";
+
+        function removeBg() {
+            const fileInput = document.getElementById("upload");
+            const outputImg = document.getElementById("output");
+            const downloadOptions = document.querySelector(".download-options");
+            const previewContainer = document.querySelector(".image-preview");
+            const removeBgBtn = document.querySelector(".btn");
+
+            if (fileInput.files.length === 0) {
+                alert("Please upload an image first!");
+                return;
+            }
+
+            let countdown = 5;
+            removeBgBtn.innerText = `Wait... ${countdown}s`; // Fixed string interpolation
+            removeBgBtn.disabled = true;
+
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                removeBgBtn.innerText = `Wait... ${countdown}s`; // Fixed string interpolation
+
+                if (countdown === 0) {
+                    clearInterval(countdownInterval);
+                    removeBgBtn.innerText = "Removing...";
+                    
+                    const formData = new FormData();
+                    formData.append("image_file", fileInput.files[0]);
+                    formData.append("size", "auto");
+
+                    fetch("https://api.remove.bg/v1.0/removebg", {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            "X-Api-Key": "cqGQ17YfjdyHzcTX6UFPNBgA"
+                        }
+                    })
+                    .then(response => response.blob())
+                    .then(blob => {
+                        processedImageUrl = URL.createObjectURL(blob);
+                        outputImg.src = processedImageUrl;
+                        previewContainer.style.display = "block";
+                        downloadOptions.style.display = "block";
+                        removeBgBtn.innerText = "Remove Background";
+                        removeBgBtn.disabled = false;
+                    })
+                    .catch(() => {
+                        alert("Error removing background!");
+                        removeBgBtn.innerText = "Remove Background";
+                        removeBgBtn.disabled = false;
+                    });
+                }
+            }, 1000);
+        }
+
+        function downloadImage(resolution) {
+            if (!processedImageUrl) {
+                alert("No processed image found!");
+                return;
+            }
+
+            let img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.src = processedImageUrl;
+
+            img.onload = function() {
+                let width = img.width;
+                let height = img.height;
+                let canvasSize = Math.max(width, height); // Default to the largest dimension for square
+
+                // Adjust canvas size based on the selected resolution
+                if (resolution === 720) {
+                    canvasSize = 720;
+                } else if (resolution === 1080) {
+                    canvasSize = 1080;
+                } else if (resolution === 'original') {
+                    canvasSize = Math.max(width, height);
+                }
+
+                // Create a square canvas with the adjusted size
+                let canvas = document.createElement("canvas");
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                let ctx = canvas.getContext("2d");
+
+                // Calculate offsets to center the image on the canvas
+                let xOffset = (canvasSize - width) / 2;
+                let yOffset = (canvasSize - height) / 2;
+
+                // Draw the image centered on the canvas
+                ctx.drawImage(img, xOffset, yOffset, width, height);
+
+                // Convert the canvas to a Blob and trigger download
+                canvas.toBlob(function(blob) {
+                    let link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    // Default download name
+                    link.download = "codewithabhishek.png"; 
+                    link.click();
+                }, "image/png");
+            };
+
+            img.onerror = function() {
+                console.error("Error loading image.");
+            };
+        }
+    </script>
+
+</body>
+</html>
