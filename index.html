@@ -169,28 +169,53 @@
                 let width = img.width;
                 let height = img.height;
 
-                // Adjust image resolution based on the selected resolution
+                // Calculate the aspect ratio of the original image
+                const aspectRatio = width / height;
+
+                // Variables for new width and height for square image
+                let newWidth, newHeight;
+
+                // Handling resolution for download while maintaining aspect ratio
                 if (resolution === 720) {
-                    width = 1280;
-                    height = 720;
+                    // If resolution is 720p, set the square's size to the larger dimension
+                    newWidth = 720;
+                    newHeight = 720;
                 } else if (resolution === 1080) {
-                    width = 1920;
-                    height = 1080;
+                    // If resolution is 1080p, set the square's size to the larger dimension
+                    newWidth = 1080;
+                    newHeight = 1080;
+                } else if (resolution === 'original') {
+                    // For original size, use the largest of the width or height for the square
+                    newWidth = Math.max(width, height);
+                    newHeight = newWidth;
                 }
 
-                canvas.width = width;
-                canvas.height = height;
+                // Set canvas size to be square
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+
                 let ctx = canvas.getContext("2d");
 
-                // Draw the image on canvas
-                ctx.drawImage(img, 0, 0, width, height);
+                // Calculate the offset to center the image within the square canvas
+                let offsetX = 0;
+                let offsetY = 0;
 
-                // Adding watermark with black color
+                // Crop the image to fit within the square (centered)
+                if (width > height) {
+                    offsetX = (width - height) / 2; // Crop the excess width from the sides
+                } else {
+                    offsetY = (height - width) / 2; // Crop the excess height from the top or bottom
+                }
+
+                // Draw the image with the necessary offset to center it in the square
+                ctx.drawImage(img, offsetX, offsetY, width - offsetX * 2, height - offsetY * 2, 0, 0, newWidth, newHeight);
+
+                // Adding watermark with black color (small watermark)
                 ctx.font = "24px Arial"; // Slightly larger font for visibility
-                ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Black color with some transparency
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Black color with transparency
                 ctx.textAlign = "right"; // Align the text to the right
                 ctx.textBaseline = "bottom"; // Place text at the bottom
-                ctx.fillText("@ABHISHEK NAYAK", width - 10, height - 10); // Position in the bottom-right corner
+                ctx.fillText("@ABHISHEK NAYAK", newWidth - 10, newHeight - 10); // Position in the bottom-right corner
 
                 // Triggering the download with watermark
                 let link = document.createElement("a");
@@ -205,4 +230,3 @@
 
 </body>
 </html>
-
