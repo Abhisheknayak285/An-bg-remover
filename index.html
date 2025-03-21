@@ -1,232 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Background Remover</title>
-    <style>
-        body {
-            background: #121212;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            background: #1e1e1e;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
-            width: 90%;
-            max-width: 350px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h1 {
-            color: #ff9800;
-            font-size: 22px;
-            margin-bottom: 15px;
-            word-wrap: break-word;
-        }
-        input, .btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin: 10px 0;
-            cursor: pointer;
-            box-sizing: border-box;
-        }
-        input {
-            background: #2a2a2a;
-            color: white;
-        }
-        .btn {
-            background: #ff9800;
-            color: white;
-            font-size: 16px;
-        }
-        .btn:hover {
-            background: #e68900;
-        }
-        .image-preview {
-            display: none;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 100%;
-            height: auto;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        .download-options {
-            display: none;
-            margin-top: 15px;
-            width: 100%;
-        }
-        .download-options button {
-            display: block;
-            width: 100%;
-            margin-top: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro Background Remover</title>
+  <style>
+    body {
+      background: #121212; /* Match website theme */
+      color: #fff;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .form-container, .container {
+      background: #1e1e1e;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      width: 90%;
+      max-width: 500px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1, h2 {
+      color: #ff9800; /* Adjusted for visual consistency */
+      font-size: 22px;
+      margin-bottom: 15px;
+      word-wrap: break-word;
+    }
+
+    input, .btn {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin: 10px 0;
+      cursor: pointer;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    input {
+      background: #2a2a2a;
+      color: white;
+    }
+
+    .btn {
+      background: #ff9800;
+      color: white;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      background: #e68900;
+    }
+
+    .btn:active {
+      background: #c77900;
+    }
+
+    .image-preview {
+      display: none;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .download-options {
+      display: none;
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .download-options button {
+      display: block;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .message {
+      text-align: center;
+      font-size: 16px;
+      color: #4caf50;
+      display: none;
+    }
+
+    .error-message {
+      color: red;
+    }
+
+    .form-container p {
+      font-size: 14px;
+      color: #777;
+      text-align: center;
+    }
+
+  </style>
 </head>
 <body>
 
+  <!-- Contact Form Section -->
+  <div class="form-container" id="contactFormSection">
+    <h2>Contact Us</h2>
+    <form id="contactForm" method="POST" action="https://script.google.com/macros/s/AKfycbxrQ7SP8e4b1RnxiCs18Ex7-4gFtXzNg5bMODzDVBbrs9sEK4CuOk4iGtxE0PlAeIrw/exec">
+      <input name="Email" type="email" placeholder="Email" required>
+      <input name="Name" type="text" placeholder="Name" required>
+      <button type="submit" id="submitButton">Send</button>
+    </form>
+    <p>We will get back to you shortly!</p>
+    <p id="successMessage" class="message">Thank you! We will get back to you soon. Redirecting...</p>
+    <p id="errorMessage" class="message error-message">There was an error. Please try again later.</p>
+  </div>
+
+  <!-- Background Remover Section -->
+  <div class="container" id="backgroundRemoverSection" style="display: none;">
     <h1>An Bg Remover</h1>
-    <div class="container">
-        <input type="file" id="upload">
-        <button class="btn" onclick="removeBg()">Remove Background</button>
+    <input type="file" id="upload">
+    <button class="btn" onclick="removeBg()">Remove Background</button>
 
-        <div class="image-preview">
-            <img id="output">
-        </div>
-
-        <div class="download-options">
-            <button class="btn" onclick="downloadImage(720)">Download 720p</button>
-            <button class="btn" onclick="downloadImage(1080)">Download 1080p</button>
-            <button class="btn" onclick="downloadImage('original')">Download Original</button>
-        </div>
+    <div class="image-preview">
+      <img id="output">
     </div>
 
-    <script>
-        let processedImageUrl = "";
+    <div class="download-options">
+      <button class="btn" onclick="downloadImage(720)">Download 720p</button>
+      <button class="btn" onclick="downloadImage(1080)">Download 1080p</button>
+      <button class="btn" onclick="downloadImage('original')">Download Original</button>
+    </div>
+  </div>
 
-        function removeBg() {
-            const fileInput = document.getElementById("upload");
-            const outputImg = document.getElementById("output");
-            const downloadOptions = document.querySelector(".download-options");
-            const previewContainer = document.querySelector(".image-preview");
-            const removeBgBtn = document.querySelector(".btn");
+  <script>
+    let processedImageUrl = "";
 
-            if (fileInput.files.length === 0) {
-                alert("Please upload an image first!");
-                return;
+    // Handle form submission
+    document.getElementById('contactForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      const submitButton = document.getElementById('submitButton');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      const form = event.target;
+
+      // Disable the button to prevent multiple submissions
+      submitButton.disabled = true;
+      submitButton.innerText = "Submitting...";
+
+      // Create FormData object to send the form data
+      const formData = new FormData(form);
+
+      // Send data to Google Apps Script
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          // If the form was successfully submitted
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+          
+          // After 3 seconds, hide the contact form and show the background remover
+          setTimeout(function() {
+            document.getElementById('contactFormSection').style.display = 'none'; // Hide contact form
+            document.getElementById('backgroundRemoverSection').style.display = 'block'; // Show background remover
+          }, 3000);
+        } else {
+          // If there was an error
+          throw new Error('Form submission failed');
+        }
+      })
+      .catch(error => {
+        // Display error message
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'block';
+
+        // Re-enable the submit button
+        submitButton.disabled = false;
+        submitButton.innerText = "Send";
+      });
+    });
+
+    function removeBg() {
+      const fileInput = document.getElementById("upload");
+      const outputImg = document.getElementById("output");
+      const downloadOptions = document.querySelector(".download-options");
+      const previewContainer = document.querySelector(".image-preview");
+      const removeBgBtn = document.querySelector(".btn");
+
+      if (fileInput.files.length === 0) {
+        alert("Please upload an image first!");
+        return;
+      }
+
+      let countdown = 5;
+      removeBgBtn.innerText = `Wait... ${countdown}s`;
+      removeBgBtn.disabled = true;
+
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        removeBgBtn.innerText = `Wait... ${countdown}s`;
+
+        if (countdown === 0) {
+          clearInterval(countdownInterval);
+          removeBgBtn.innerText = "Removing...";
+
+          const formData = new FormData();
+          formData.append("image_file", fileInput.files[0]);
+          formData.append("size", "auto");
+
+          fetch("https://api.remove.bg/v1.0/removebg", {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-Api-Key": "u5JSL1AnTHxjNvR5iq4PgcQX"
             }
+          })
+          .then(response => response.blob())
+          .then(blob => {
+            processedImageUrl = URL.createObjectURL(blob);
+            outputImg.src = processedImageUrl;
+            previewContainer.style.display = "block";
+            downloadOptions.style.display = "block";
+            removeBgBtn.innerText = "Remove Background";
+            removeBgBtn.disabled = false;
+          })
+          .catch(() => {
+            alert("Error removing background!");
+            removeBgBtn.innerText = "Remove Background";
+            removeBgBtn.disabled = false;
+          });
+        }
+      }, 1000);
+    }
 
-            let countdown = 5;
-            removeBgBtn.innerText = `Wait... ${countdown}s`;
-            removeBgBtn.disabled = true;
+    function downloadImage(resolution) {
+      if (!processedImageUrl) {
+        alert("No processed image found!");
+        return;
+      }
 
-            const countdownInterval = setInterval(() => {
-                countdown--;
-                removeBgBtn.innerText = `Wait... ${countdown}s`;
+      let canvas = document.createElement("canvas");
+      let img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.src = processedImageUrl;
 
-                if (countdown === 0) {
-                    clearInterval(countdownInterval);
-                    removeBgBtn.innerText = "Removing...";
+      img.onload = function() {
+        let width = img.width;
+        let height = img.height;
 
-                    const formData = new FormData();
-                    formData.append("image_file", fileInput.files[0]);
-                    formData.append("size", "auto");
+        const aspectRatio = width / height;
+        let newWidth, newHeight;
 
-                    fetch("https://api.remove.bg/v1.0/removebg", {
-                        method: "POST",
-                        body: formData,
-                        headers: {
-                            "X-Api-Key": "u5JSL1AnTHxjNvR5iq4PgcQX"
-                        }
-                    })
-                    .then(response => response.blob())
-                    .then(blob => {
-                        processedImageUrl = URL.createObjectURL(blob);
-                        outputImg.src = processedImageUrl;
-                        previewContainer.style.display = "block";
-                        downloadOptions.style.display = "block";
-                        removeBgBtn.innerText = "Remove Background";
-                        removeBgBtn.disabled = false;
-                    })
-                    .catch(() => {
-                        alert("Error removing background!");
-                        removeBgBtn.innerText = "Remove Background";
-                        removeBgBtn.disabled = false;
-                    });
-                }
-            }, 1000);
+        if (resolution === 720) {
+          newWidth = 720;
+          newHeight = 720;
+        } else if (resolution === 1080) {
+          newWidth = 1080;
+          newHeight = 1080;
+        } else if (resolution === 'original') {
+          newWidth = Math.max(width, height);
+          newHeight = newWidth;
         }
 
-        function downloadImage(resolution) {
-            if (!processedImageUrl) {
-                alert("No processed image found!");
-                return;
-            }
+        canvas.width = newWidth;
+        canvas.height = newHeight;
 
-            let canvas = document.createElement("canvas");
-            let img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = processedImageUrl;
+        let ctx = canvas.getContext("2d");
+        let offsetX = 0;
+        let offsetY = 0;
 
-            img.onload = function() {
-                let width = img.width;
-                let height = img.height;
-
-                // Calculate the aspect ratio of the original image
-                const aspectRatio = width / height;
-
-                // Variables for new width and height for square image
-                let newWidth, newHeight;
-
-                // Handling resolution for download while maintaining aspect ratio
-                if (resolution === 720) {
-                    // If resolution is 720p, set the square's size to the larger dimension
-                    newWidth = 720;
-                    newHeight = 720;
-                } else if (resolution === 1080) {
-                    // If resolution is 1080p, set the square's size to the larger dimension
-                    newWidth = 1080;
-                    newHeight = 1080;
-                } else if (resolution === 'original') {
-                    // For original size, use the largest of the width or height for the square
-                    newWidth = Math.max(width, height);
-                    newHeight = newWidth;
-                }
-
-                // Set canvas size to be square
-                canvas.width = newWidth;
-                canvas.height = newHeight;
-
-                let ctx = canvas.getContext("2d");
-
-                // Calculate the offset to center the image within the square canvas
-                let offsetX = 0;
-                let offsetY = 0;
-
-                // Crop the image to fit within the square (centered)
-                if (width > height) {
-                    offsetX = (width - height) / 2; // Crop the excess width from the sides
-                } else {
-                    offsetY = (height - width) / 2; // Crop the excess height from the top or bottom
-                }
-
-                // Draw the image with the necessary offset to center it in the square
-                ctx.drawImage(img, offsetX, offsetY, width - offsetX * 2, height - offsetY * 2, 0, 0, newWidth, newHeight);
-
-                // Adding watermark with black color (small watermark)
-                ctx.font = "24px Arial"; // Slightly larger font for visibility
-                ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; // Black color with transparency
-                ctx.textAlign = "right"; // Align the text to the right
-                ctx.textBaseline = "bottom"; // Place text at the bottom
-                ctx.fillText("@ABHISHEK NAYAK", newWidth - 10, newHeight - 10); // Position in the bottom-right corner
-
-                // Triggering the download with watermark
-                let link = document.createElement("a");
-                link.href = canvas.toDataURL("image/png");
-                link.download = "AbhishekNayak.png"; // Default name for download
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            };
+        if (width > height) {
+          offsetX = (width - height) / 2;
+        } else {
+          offsetY = (height - width) / 2;
         }
-    </script>
+
+        ctx.drawImage(img, offsetX, offsetY, width - offsetX * 2, height - offsetY * 2, 0, 0, newWidth, newHeight);
+
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "bottom";
+        ctx.fillText("@ABHISHEK NAYAK", newWidth - 10, newHeight - 10);
+
+        let link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png");
+        link.download = "AbhishekNayak.png";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+    }
+  </script>
 
 </body>
 </html>
+
